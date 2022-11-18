@@ -15,6 +15,14 @@ class Controller
   }
 
   function render($page, $result = '') {
-    require(__DIR__ . '/../views/' . ucfirst($page[0]) . '/' . ucfirst($page[1]) . '.phtml');
+    if($result !== '' && $result[0] === 'errors') {
+      require(__DIR__ . '/../views/components/Header.phtml');
+      require(__DIR__ . '/../views/Home/Error.phtml');
+      require(__DIR__ . '/../views/components/Footer.phtml');  
+    } else {
+      require(__DIR__ . '/../views/components/Header.phtml');
+      require(__DIR__ . '/../views/' . ucfirst($page[0]) . '/' . ucfirst($page[1]) . '.phtml');
+      require(__DIR__ . '/../views/components/Footer.phtml');
+    }
   }
 }

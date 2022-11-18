@@ -1,0 +1,29 @@
+<div class="account-container equipment">
+  <form action="/equipment/action/create" page="<?= isset($_GET['back']) ? '/request/create' : '/equipments' ?>" method="POST">
+    <h1>Novo equipamento</h1>
+    <label class="input-block">
+      <span class="label">Nome</span>
+      <input class="custom" name="name" type="text">
+      <span></span>
+    </label>
+    <label class="input-block">
+      <span class="label">Especificações</span>
+      <textarea class="custom" name="specifications"></textarea>
+      <span></span>
+    </label>
+    <label class="input-block file">
+      <span class="label">Fotos do equipamento</span>
+      <span class="input_file_visible">Escolher fotos</span>
+      <input class="custom multiple" type="file" multiple accept="image/*">
+      <span></span>
+    </label>
+    <div class="img-block">
+      <div>
+      </div>
+    </div>
+    <button class="custom" type="submit">Criar</button>
+  </form>
+  <div class="img-container">
+    <?php importImg('equipmentsImg.svg') ?>
+  </div>
+</div>

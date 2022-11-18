@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html>
+<?php if (!isset($_GET['reduced'])) { ?>
+  <!DOCTYPE html>
+  <html>
 
-<head>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&amp;display=swap" rel="stylesheet">
-  <link type="text/css" rel="stylesheet" href="/frontend/css/tailwind.css" media="screen,projection" />
-  <link rel="stylesheet" href="/frontend/css/styles.css">
-  <link rel="icon" href="/frontend/assets/logo.svg">
-  <title>Assistência técnica (ordem de serviço)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&family=Poppins&display=swap" rel="stylesheet">
+    <link rel="icon" href="/frontend/assets/logo.svg">
+    <link rel="stylesheet" href="/frontend/css/global.css">
+    <title>ServiTech PC • <?= URL ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
 
-<body class="bg-gray-100">
+  <body>
+    <?php } ?>
+    <div id="root" class="<?= isset($_SESSION['id']) ? 'logged' : '' ?>">
+    
+    <?php if(isset($_SESSION['id'])) require(__DIR__.'/../components/Dashboard.phtml') ?>

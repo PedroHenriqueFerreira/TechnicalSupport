@@ -1,0 +1,47 @@
+
+  <div class="account-container profile">
+    <form action="/user/update" page="/profile" method="POST">
+      <h1>Seu perfil</h1>
+      <label class="input-block">
+        <span class="label">Nome</span>
+        <input class="custom" name="name" readonly value="<?= $result[1]->name ?>" type="text">
+        <span></span>
+      </label>
+      <label class="input-block">
+        <span class="label">Email</span>
+        <input class="custom" name="email" readonly value="<?= $result[1]->email ?>" type="email">
+        <span></span>
+      </label>
+      <label class="input-block">
+        <span class="label">CPF</span>
+        <input class="custom" name="cpf" readonly value="<?= $result[1]->cpf ?>" placeholder="___.___.___-__" type="text" onkeyup="mask('###.###.###-##', this, event, true)" maxlength="14">
+        <span></span>
+      </label>
+      <label class="input-block">
+        <span class="label">Endereço</span>
+        <input class="custom" name="address" readonly value="<?= $result[1]->address ?>" type="text">
+        <span></span>
+      </label>
+      <div class="input-block">
+        <label for="number" class="label">Número</label>
+        <input id="number" class="custom" name="number[<?= $result[1]->numbers[0]['id'] ?>edited]" placeholder="+__ (  ) _____-_____" readonly value="<?= $result[1]->numbers[0]['number'] ?>" type="text" onkeyup="mask('+## (##) #####-####', this, event, true)" maxlength="19">
+        <span></span>
+      </div>
+      <?php foreach ($result[1]->numbers as $idx => $number) {
+        if ($idx !== 0) {
+      ?>
+          <div class="input-block" code="<?= $number['id'] ?>">
+            <input class="custom no-label" name="number[<?= $number['id'] ?>edited]" readonly value="<?= $number['number'] ?>" type="text" onkeyup="mask('+## (##) #####-####', this, event, true)" maxlength="19">
+            <span></span>
+          </div>
+      <?php
+        }
+      }
+      ?>
+      <button class="custom" type="submit">Editar</button>
+      <a id="delete_account" action="/user/action/delete" href="/login">APAGAR CONTA</a>
+    </form>
+    <div class="img-container profile">
+      <img src="/backend/uploads/<?= $result[1]->photo ?>" alt="">
+    </div>
+  </div>

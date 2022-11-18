@@ -25,8 +25,6 @@ class RequestModel extends Model {
       $checkDesc = $this->len('descrição', 'description', 50, 500);
       if($checkDesc) $errors[] = $checkDesc; 
     } else {
-      if($this->__get('status') != 1 && $this->__get('status') != 2 && $this->__get('status') != 3) $errors[] = 'Valor inválido para o campo status';
-
       if(!$this->__get('cost')) $errors[] = 'O campo custo é requerido';
 
       $checkReport = $this->len('relatório', 'report', 50, 500);
@@ -99,7 +97,7 @@ class RequestModel extends Model {
 
         $createRequest->execute();
 
-        return ['success', true];
+        return ['success', 'Ordem de serviço criada com sucesso'];
       }
 
       return ['errors', ['Equipamento não encontrado']];
@@ -111,7 +109,7 @@ class RequestModel extends Model {
 
   function show() {
     try {
-      $getRequestQuery = 'SELECT requests.id, equipments.name, equipments.specifications, requests.created_at, requests.updated_at, requests.status, requests.cost, requests.report, requests.description FROM requests INNER JOIN equipments ON equipments.id = requests.equipment_id WHERE requests.id = ?';
+      $getRequestQuery = 'SELECT requests.id, equipments.name, equipments.specifications, GROUP_CONCAT(DISTINCT CONCAT(equipment_photos.id,",",equipment_photos.photo) ORDER BY equipment_photos.id SEPARATOR ";") AS photos, requests.created_at, requests.updated_at, requests.status, requests.cost, requests.report, requests.description FROM requests INNER JOIN equipments ON equipments.id = requests.equipment_id INNER JOIN equipment_photos ON equipments.id = equipment_photos.equipment_id WHERE requests.id = ?';
 
       if(!$_SESSION['is_admin']) {
         $getRequestQuery .= ' AND equipments.user_id = ?';
@@ -127,6 +125,28 @@ class RequestModel extends Model {
 
       $request = $getRequest->fetch(PDO::FETCH_OBJ);
       if($request) {
+        if (isset($request->photos)) {
+          $request->photos = explode(';', $request->photos);
+
+          foreach ($request->photos as $photoIdx => $equipPhoto) {
+            $id = explode(',', $equipPhoto)[0];
+            $photo = explode(',', $equipPhoto)[1];
+
+            $request->photos[$photoIdx] = ['id' => $id, 'photo' => $photo];
+          }
+        }
+
+        if (isset($request->numbers)) {
+          $request->numbers = explode(';', $request->numbers);
+
+          foreach ($request->numbers as $idNumber => $user_number) {
+            $id = explode(',', $user_number)[0];
+            $number = explode(',', $user_number)[1];
+
+            $request->numbers[$idNumber] = ['id' => $id, 'number' => $number];
+          }
+        }
+
         return ['success', $request];
       } 
 
@@ -138,7 +158,7 @@ class RequestModel extends Model {
 
   function index() {
     try {
-      $getRequestsQuery = 'SELECT requests.id, equipments.name, equipments.specifications, requests.created_at, requests.updated_at, requests.status, requests.cost, requests.report, requests.description FROM requests INNER JOIN equipments ON equipments.id = requests.equipment_id';
+      $getRequestsQuery = 'SELECT users.id as user_id, users.name as user_name, users.photo as user_photo, requests.id, equipments.name, equipments.specifications, requests.created_at, requests.updated_at, requests.status, requests.cost, requests.report, requests.description FROM requests INNER JOIN equipments ON equipments.id = requests.equipment_id INNER JOIN users ON equipments.user_id = users.id';
 
       if(!$_SESSION['is_admin']) {
         $getRequestsQuery .= ' WHERE equipments.user_id = ?';
@@ -159,10 +179,10 @@ class RequestModel extends Model {
     }
   }
 
-  function update() {
+  function accept() {
     try {
-      if($this->checkErrors('update')) {
-        return ['errors', $this->checkErrors('update')];
+      if($this->checkErrors('accept')) {
+        return ['errors', $this->checkErrors('accept')];
       }
 
       $findEquipment = $this->findEquipment($_POST['id'], true, true);
@@ -172,11 +192,31 @@ class RequestModel extends Model {
         $updateEquipment = Connection::connect()->prepare($updateEquipmentQuery);
         $updateEquipment->bindValue(1, $this->__get('cost'));
         $updateEquipment->bindValue(2, $this->__get('report'));
-        $updateEquipment->bindValue(3, $this->__get('status'));
+        $updateEquipment->bindValue(3, 1);
         $updateEquipment->bindValue(4, $_POST['id']);
         $updateEquipment->execute();
 
-        return ['success', true];
+        return ['success', 'Ordem de serviço aceita com sucesso!'];
+      }
+
+      return ['errors', ['Ordem de serviço não encontrada']];
+    } catch(Throwable $e) {
+      return ['errors', [$e->getMessage()]];
+    }
+  }
+
+  function refuse() {
+    try {
+      $findEquipment = $this->findEquipment($_POST['id'], true, true);
+
+      if(isset($findEquipment->id)) {
+        $updateEquipmentQuery = 'UPDATE requests SET status = ? WHERE id = ?';
+        $updateEquipment = Connection::connect()->prepare($updateEquipmentQuery);
+        $updateEquipment->bindValue(1, 2);
+        $updateEquipment->bindValue(2, $_POST['id']);
+        $updateEquipment->execute();
+
+        return ['success', 'Ordem de serviço recusada com sucesso!'];
       }
 
       return ['errors', ['Ordem de serviço não encontrada']];
@@ -195,7 +235,7 @@ class RequestModel extends Model {
         $deleteRequest->bindValue(1, $_POST['id']);
         $deleteRequest->execute();
 
-        return ['success', true];
+        return ['success', 'Ordem de serviço deletada com sucesso!'];
       }
 
       return ['errors', ['Ordem de serviço não encontrada']];

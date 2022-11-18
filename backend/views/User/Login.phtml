@@ -1,0 +1,33 @@
+<div class="top">
+  <a class="logo-container" href="/">
+    <?php importImg('logo.svg') ?>
+    <?php importImg('logo-mobile.svg') ?>
+  </a>
+</div>
+<div class="account-container login">
+  <form action="/user/action/login" page="/" method="POST">
+    <h1>Faça seu login</h1>
+    <label class="input-block">
+      <span class="label">Email</span>
+      <input class="custom" name="email" type="email">
+      <span></span>
+    </label>
+    <label class="input-block">
+      <span class="label">Senha</span>
+      <input class="custom" name="password" type="password">
+      <span></span>
+    </label>
+    <div class="row login">
+      <label class="checkbox-block">
+        <input type="checkbox" name="remember">
+        <span class="check"></span>
+        <span class="label">Lembrar de mim</span>
+      </label>
+    </div>
+    <button class="custom" type="submit">Entrar</button>
+    <a class="custom" href="/register">Crie uma conta</a>
+  </form>
+  <div class="img-container">
+    <?php importImg('loginImg.svg') ?>
+  </div>
+</div>

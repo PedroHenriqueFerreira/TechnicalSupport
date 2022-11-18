@@ -1,19 +1,18 @@
-@tailwind base;
-@tailwind components;
-
 :root {
-}
+  --secondaryColor: #4C6EF8;
+  --secondaryHoverColor: #607ef5;
+  --successColor: #65F9B3;
+  --successHoverColor: #4fd898;
+  --dangerColor: #e83e8c;
+  --waitColor: #ffbe73;
+  
+  --blackColor: #32264d;
 
-.nada * {
-    margin: 0;
-    padding: 0;
-    outline: 0;
-    font-family: 'Poppins', arial, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-}
+  --backgroundColor: #F5F6FF;
+  --whiteColor: #fff;
+  --grayColor: #676B84;
 
-body {
-    
+  --shadow-color: rgba(0,0,0, 0.05);
+  --shadow-light-color: rgba(255,255,255, 0.1);
+  --shadow: 0 2px 50px 10px rgba(0, 0, 0, 0.05);
 }
-
-@tailwind utilities;

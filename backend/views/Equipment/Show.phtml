@@ -1,0 +1,48 @@
+<?php if ($result[0] === 'success') { ?>
+  <div class="account-container equipment update">
+    <form action="/equipment/update" page="/equipment/<?= $_POST['id'] ?>" method="POST">
+      <input type="hidden" name="code" value="<?= $_POST['id'] ?>">
+      <h1>Equipamento</h1>
+      <label class="input-block">
+        <span class="label">Nome</span>
+        <input class="custom" name="name" type="text" value="<?= $result[1]->name ?>" readonly>
+        <span></span>
+      </label>
+      <label class="input-block">
+        <span class="label">Especificações</span>
+        <textarea class="custom" name="specifications" readonly><?= $result[1]->specifications ?></textarea>
+        <span></span>
+      </label>
+      <label class="input-block file disabled">
+        <span class="label">Fotos do equipamento</span>
+      </label>
+      <div class="img-block">
+        <div>
+          <?php foreach($result[1]->photos as $photo) { ?>
+            <div class="img-view">
+              <input type="hidden" name="photo[<?= $photo['id'] ?>]" code="<?= $photo['id'] ?>" class="disable">
+              <span class="label" complete="<?= $photo['photo'] ?>">
+                <?php 
+                  $shortPhoto = $photo['photo'];
+                  if (strlen($shortPhoto) > 10) {
+                    $shortPhoto = substr($shortPhoto, 0, 10).'...';
+                  }
+
+                  echo $shortPhoto;
+                ?>
+              </span>
+              <?php importImg('refused.svg') ?>
+              <img src="/backend/uploads/<?= $photo['photo'] ?>" alt="">
+            </div>
+          <?php } ?>
+        </div>
+      </div>
+      <?php if($result[1]->user_id === $_SESSION['id']) { ?>
+        <button class="custom" type="submit">Editar</button>
+      <?php } ?>
+    </form>
+    <div class="img-container">
+      <?php importImg('equipmentsImg.svg') ?>
+    </div>
+  </div>
+<?php } ?>

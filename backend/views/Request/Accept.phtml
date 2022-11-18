@@ -1,0 +1,19 @@
+<div class="account-container">
+  <form action="/request/action/<?= $_POST['id'] ?>/accept" page="/" method="POST">
+    <h1>Concluir ordem de serviço</h1>
+    <label class="input-block">
+      <span class="label">Relatório</span>
+      <textarea class="custom" name="report"></textarea>
+      <span></span>
+    </label>
+    <label class="input-block">
+      <span class="label">Custo</span>
+      <input class="custom" name="cost" type="number">
+      <span></span>
+    </label>
+    <button class="custom" type="submit">Concluir</button>
+  </form>
+  <div class="img-container">
+    <?php importImg('requestImg.svg') ?>
+  </div>
+</div>

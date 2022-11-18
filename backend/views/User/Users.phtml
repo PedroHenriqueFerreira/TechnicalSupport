@@ -1,0 +1,34 @@
+<div class="container">
+  <h1><?= URL === '/technicals' ? 'Técnicos' : 'Clientes' ?></h1>
+  <div class="table-container">
+    <div class="table">
+      <div class="th">
+        <div class="td">#</div>
+        <div class="td">Perfil</div>
+        <div class="td">Email</div>
+        <div class="td addr">Endereço</div>
+        <div class="td num" style="justify-content: center;">Número</div>
+      </div>
+      <div class="tbody">
+        <?php foreach($result[1] as $idx => $client) { ?>
+          <div class="tr" href="/profile/<?= $client->id ?>">
+            <div class="td idx"><?= $idx + 1 ?></div>
+            <div class="td">
+              <img src="/backend/uploads/<?= $client->photo ?>" alt="">
+              <?= format($client->name, 8) ?>
+            </div>
+            <div class="td">
+              <?= format($client->email, 13) ?>
+            </div>
+            <div class="td addr">
+              <?= format($client->address, 50) ?>
+            </div>
+            <div class="td num">
+              <?= $client->numbers[0] ?>
+            </div>
+          </div>
+        <?php } ?>
+      </div>
+    </div>
+  </div>
+</div>

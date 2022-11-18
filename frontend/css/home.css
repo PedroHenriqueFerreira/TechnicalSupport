@@ -1,0 +1,457 @@
+.top.home .profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.top.home .profile img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  margin-right: 10px;
+}
+
+.top.home .profile svg {
+  width: 10px;
+  height: 10px;
+  fill: var(--backgroundColor);
+  margin-left: 10px;
+}
+
+.top.home .profile .name {
+  color: var(--backgroundColor);
+}
+
+.top.home .profile .options ul {
+  display: none;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--whiteColor);
+  padding: 10px 0px;
+  border-radius: 10px;
+  list-style: none;
+  position: absolute;
+  top: 100%;
+  width: 175px;
+  box-shadow: 5px 0px 50px 10px var(--shadow-color);
+  z-index: 99999999999999999999999999;
+}
+
+.top.home .profile:hover ul {
+  display: block;
+}
+
+.top.home .profile .options ul::after {
+  content: '';
+  display: block;
+  width: 80%;
+  height: 2px;
+  background-color: var(--whiteColor);
+  position: absolute;
+  top: -7.5px;
+  left: 10%;
+  z-index: 9;
+}
+
+.top.home .profile .options li a {
+  padding: 10px 30px;
+  display: block;
+  color: var(--grayColor);
+  z-index: 999;
+  border-left: 3px solid transparent;
+}
+
+.top.home .profile .options li a:hover {
+  background-color: var(--shadow-color);
+  border-left: 3px solid var(--secondaryColor);
+}
+
+#root > .row {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.dashboard {
+  width: 325px;
+  height: 100vh;
+  background-color: var(--whiteColor);
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 100px 0;
+  transition: 0.2s;
+  z-index: 99;
+}
+
+.hamburger {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: var(--shadow);
+  background-color: var(--secondaryColor);
+  position: fixed;
+  bottom: 20px;
+  left: 15px;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999999999999999999999999999999;
+  cursor: pointer;
+  transition: 0.2s;
+  display: none;
+}
+
+.hamburger:hover {
+  background-color: var(--secondaryHoverColor);
+}
+
+.hamburger svg {
+  width: 25px;
+  height: 25px;
+}
+
+.dashboard ul hr {
+  width: 80%;
+  margin: 20px auto;
+  height: 1px;
+  background-color: var(--shadow-color);
+  border: none;
+}
+
+.dashboard ul {
+  list-style: none;
+}
+
+.dashboard li a {
+  padding: 15px 25px;  
+  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-left: 4px solid transparent;
+}
+
+.dashboard li a span {
+ color: var(--grayColor);
+}
+
+.dashboard li a:hover {
+  background-color: var(--shadow-color);
+  border-color: var(--secondaryColor);
+}
+
+.dashboard li a svg {
+  width: 22.5px;
+  height: 22.5px;
+  margin-right: 20px;
+  fill: var(--grayColor);
+}
+
+.container {
+  margin: 0 auto;
+  margin-top: -70px;
+  width: 98%;
+  background-color: var(--whiteColor);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .cards {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  width: 95%;
+}
+
+.container .card {
+  width: 23%;
+  height: 150px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  background-color: var(--secondaryColor);
+  border-color: var(--secondaryColor);
+}
+
+.card:hover {
+  filter: brightness(90%);
+}
+
+.card * {
+  color: var(--whiteColor);
+}
+
+.card h4 {
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.card h1 {
+  font-size: 50px;
+}
+
+.card p {
+  font-size: 14px;
+  color: var(--backgroundColor);
+}
+
+.card.wait {
+  border-bottom-color: var(--waitColor);
+  background-color: var(--waitColor);
+  border-color: var(--waitColor);
+}
+
+
+.card.accept {
+  border-bottom-color: var(--successColor);
+  background-color: var(--successColor);
+  border-color: var(--successColor);
+}
+
+
+.card.recused {
+  border-bottom-color: var(--dangerColor);
+  background-color: var(--dangerColor);
+  border-color: var(--dangerColor);
+}
+
+.card .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* TABLE */
+
+.table-container {
+  width: 95%;
+  overflow-x: auto;
+}
+
+.table {
+  min-width: 1275px;
+  margin: 20px 0 40px 0;
+  border-radius: 20px;
+}
+
+.tr {
+  display: flex;
+}
+
+.tr .td:not(.options) {
+  pointer-events: none;
+}
+
+.tr .td:nth-child(1), 
+.th .td:nth-child(1) {
+  width: 5%;
+}
+
+.tr .td:nth-child(2), 
+.th .td:nth-child(2) {
+  width: 10%;
+}
+
+.tr .td:nth-child(3), 
+.th .td:nth-child(3) {
+  width: 13%;
+}
+
+.tr .td:nth-child(4), 
+.th .td:nth-child(4) {
+  width: 40.5%;
+}
+
+.tr .td:nth-child(5), 
+.th .td:nth-child(5) {
+  width: 11.5%;
+}
+
+.tr .td:nth-child(6), 
+.th .td:nth-child(6) {
+  width: 7.5%;
+}
+
+.tr .td:nth-child(7), 
+.th .td:nth-child(7) {
+  width: 16%;
+}
+
+.tr .td.equip, 
+.th .td.equip {
+  width: 60%;
+}
+
+.tr .td.addr, 
+.th .td.addr {
+  width: 60%;
+}
+
+.tr .td.num, 
+.th .td.num {
+  width: 16%;
+}
+
+.td {
+  width: 20%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.td.status, .td.options, .td.idx {
+  justify-content: center;
+}
+
+.td.status svg {
+  width: 15px;
+  height: 15px;
+}
+
+
+.td img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.td a {
+  margin-right: 10px;
+  color: var(--secondaryColor);
+}
+
+.td a:hover {
+  filter: brightness(110%);
+  color: var(--secondaryColor);
+}
+
+.td a.accept {
+  color: var(--successColor);
+}
+
+.td a.accept:hover {
+  filter: brightness(110%);
+  color: var(--successColor) !important;
+}
+
+.td a.delete {
+  color: var(--dangerColor);
+}
+
+.td a.delete:hover {
+  filter: brightness(110%);
+  color: var(--dangerColor) !important;
+}
+
+.th {
+  display: flex;
+  background: var(--secondaryColor);
+  color: var(--whiteColor);
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+.th .td {
+  color: var(--whiteColor);
+  padding: 15px 30px;
+}
+
+.tr:hover {
+  background-color: var(--shadow-color);
+  cursor: pointer;
+  border-radius: 15px;
+}
+
+.container > .create {
+  width: 90%;
+  text-align: right;
+  color: var(--secondaryColor);
+  padding-bottom: 40px;
+}
+
+@media (max-width: 1210px) {
+  .card p {
+    display: none;
+  }
+
+  .card h4 {
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .card h1 {
+    width: 100%;
+    font-size: 40px;
+    text-align: center;
+  }
+
+  .cards .card {
+    height: 105px;
+  }
+
+  .dashboard {
+    width: 275px;
+  }
+}
+
+@media (max-width: 970px) {
+  .card h4 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    box-shadow: var(--shadow);
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  #check:checked + .dashboard {
+    width: 275px;
+    height: 100vh;
+  }
+
+  #check:checked + .dashboard .hamburger svg {
+    transform: rotateZ(180deg);
+  }
+
+  .cards {
+    overflow-x: auto;
+  }
+
+  .cards .card {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 780px) {
+  .cards .card {
+    margin: 0 7.5px;
+  }
+}

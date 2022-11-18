@@ -1,0 +1,30 @@
+<div class="account-container">
+  <form action="/request/action/create" page="/" method="POST">
+    <h1>Criar ordem de serviço</h1>
+    <div class="radio-block">
+      <span class="label">Escolha o equipamento</span>
+      <div>
+        <?php foreach($result[1] as $idx => $equipment) { ?>
+          <label class="radio-item" title="<?= $equipment->specifications ?>">
+            <input type="radio" name="equipment_id" value="<?= $equipment->id ?>" <?= $idx === 0 ? 'main="true"' : '' ?>>
+            <span></span>
+            <span><?= format($equipment->name, 12) ?></span>
+            <img src="/backend/uploads/<?= $equipment->photos[0]['photo'] ?>" alt="" slide=<?= json_encode($equipment->photos) ?>>
+          </label>
+        <?php } ?>
+        <a href="/equipment/create?back=true">
+          Adicionar equipamento
+        </a>
+      </div>
+    </div>
+    <label class="input-block">
+      <span class="label">Descrição</span>
+      <textarea class="custom" name="description" type="text"></textarea>
+      <span></span>
+    </label>
+    <button class="custom" type="submit">Criar</button>
+  </form>
+  <div class="img-container">
+    <?php importImg('requestImg.svg') ?>
+  </div>
+</div>

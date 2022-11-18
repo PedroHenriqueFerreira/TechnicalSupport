@@ -1,0 +1,42 @@
+<?php if($result[0] === 'success') { ?>
+<div class="container">
+  <h1>Equipamentos</h1>
+  <div class="table-container">
+    <div class="table">
+      <div class="th">
+        <div class="td">#</div>
+        <div class="td">Usuário</div>
+        <div class="td">Nome</div>
+        <div class="td equip">Especificação</div>
+        <div class="td" style="justify-content: center;">Opções</div>
+      </div>
+      <div class="tbody">
+        <?php foreach($result[1] as $idx => $equipment) { ?>
+          <div class="tr" href="/equipment/<?= $equipment->id ?>">
+            <div class="td idx"><?= $idx + 1 ?></div>
+            <div class="td">
+              <img src="/backend/uploads/<?= $equipment->user_photo ?>" alt="">
+              <?= format($equipment->user_name, 8) ?>
+            </div>
+            <div class="td">
+              <?= format($equipment->name, 13) ?>
+            </div>
+            <div class="td equip">
+              <?= format($equipment->specifications, 80) ?>
+            </div>
+            <div class="td options">
+              <?php if($equipment->user_id !== $_SESSION['id']) { ?>
+                <a class="custom delete" action="/equipment/action/<?= $equipment->id ?>/delete" href="/equipments">Remover</a>
+              <?php } else { ?>
+                <a class="custom" href="/equipment/<?= $equipment->id ?>">Editar</a>
+                <a class="custom delete" action="/equipment/action/<?= $equipment->id ?>/delete" href="/equipments">Apagar</a>
+              <?php } ?>
+            </div>
+          </div>
+        <?php } ?>
+      </div>
+    </div>
+  </div>
+  <a href="/request/create" class="custom create">+ Novo equipamento</a>
+</div>
+<?php } ?>

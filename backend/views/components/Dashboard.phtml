@@ -1,0 +1,70 @@
+<header class="top home">
+  <a class="logo-container" href="/">
+  <?php importImg('logo.svg') ?>
+    <?php importImg('logo-mobile.svg') ?>
+  </a>
+  <label class="profile">
+    <img src="/backend/uploads/<?= $_SESSION['photo'] ?>" alt="">
+    <span class="name"><?= $_SESSION['name'] ?></span>
+    <?php importImg('arrow.svg') ?>
+    <div class="options">
+      <ul>
+        <li>
+          <a href="/profile">Ver perfil</a>
+        </li>
+        <li>
+          <a action="/user/action/logout" href="/login">Sair</a>
+        </li>
+      </ul>
+    </div>
+  </label>
+</header>
+<input type="checkbox" class="hidden" id="check">
+<aside class="dashboard">
+  <label class="hamburger" for="check">
+    <?php importImg('open.svg') ?>
+  </label>
+  <ul>
+    <li>
+      <a href="/">
+        <?php importImg('home.svg') ?>
+
+        <span>Home</span>
+      </a>
+    </li>
+    <hr>
+    <li>
+      <a href="/technicals">
+        <?php importImg('users.svg') ?>
+
+        <span>Assistentes</span>
+      </a>
+    </li>
+    <?php if($_SESSION['is_admin']) { ?>
+      <li>
+        <a href="/clients">
+          <?php importImg('users.svg') ?>
+
+          <span>Clientes</span>
+        </a>
+      </li>
+    <?php } ?>
+    <hr>
+    <li>
+      <a href="/equipments">
+        <?php importImg('equipments.svg') ?>
+
+        <span>Equipamentos</span>
+      </a>
+    </li>
+    <hr>
+
+    <li>
+      <a href="/about">
+        <?php importImg('aboutUs.svg') ?>
+
+        <span>Sobre nós</span>
+      </a>
+    </li>
+  </ul>
+</aside>

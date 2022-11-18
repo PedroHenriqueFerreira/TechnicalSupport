@@ -1,8 +1,9 @@
 <?php
 
-require(__DIR__.'/../models/EquipmentModel.php');
+require(__DIR__ . '/../models/EquipmentModel.php');
 
-class UserModel extends Model {
+class UserModel extends Model
+{
 
   private $name;
   private $email;
@@ -13,83 +14,92 @@ class UserModel extends Model {
   private $number;
   private $deleted_number;
 
-  function __get($prop) {
+  function __get($prop)
+  {
     return $this->$prop;
   }
 
-  function __set($prop, $val) {
+  function __set($prop, $val)
+  {
     $this->$prop = $val;
   }
 
-  function checkErrors($type) {
+  function checkErrors($type)
+  {
     $errors = [];
-  
-    if($type !== 'login') {
+
+    if ($type !== 'login' && $type !== 'check_register') {
       $checkCPF = $this->find('cpf', 'cpf', ['.', '.', '-']);
-      if($checkCPF) $errors[] = $checkCPF; 
-    
+      if ($checkCPF) $errors[] = $checkCPF;
+
       $checkCPF2 = $this->len('cpf', 'cpf', 14, 0);
-      if($checkCPF2) $errors[] = $checkCPF2; 
+      if ($checkCPF2) $errors[] = $checkCPF2;
 
       $checkAddress = $this->len('endereço', 'address', 3, 50);
-      if($checkAddress) $errors[] = $checkAddress; 
-    
+      if ($checkAddress) $errors[] = $checkAddress;
+
       $checkName = $this->len('nome', 'name', 3, 30);
-      if($checkName) $errors[] = $checkName;
+      if ($checkName) $errors[] = $checkName;
+    }
+    
+    if($type === 'check_register') {
+      $checkName = $this->len('nome', 'name', 3, 30);
+      if ($checkName) $errors[] = $checkName;
     }
 
     $checkEmail = $this->find('email', 'email', ['@', '.com']);
-    if($checkEmail) $errors[] = $checkEmail;
+    if ($checkEmail) $errors[] = $checkEmail;
 
-    if($type !== 'update') {
+    if ($type !== 'update') {
       $checkPass = $this->len('senha', 'password', 5, 32);
-      if($checkPass) $errors[] = $checkPass;
+      if ($checkPass) $errors[] = $checkPass;
     }
-    
-    if($type === 'update') {
-      if($this->__get('password') && $this->__get('new_password')) {
-        if($this->__get('new_password') === $this->__get('password')) $errors[] = 'As senhas devem ser distintas';
-  
+
+    if ($type === 'update') {
+      if ($this->__get('password') && $this->__get('new_password')) {
+        if ($this->__get('new_password') === $this->__get('password')) $errors[] = 'As senhas devem ser distintas';
+
         $checkPass = $this->len('senha atual', 'password', 5, 32);
-        if($checkPass) $errors[] = $checkPass;
+        if ($checkPass) $errors[] = $checkPass;
 
         $checkNewPass = $this->len('senha nova', 'new_password', 5, 32);
-        if($checkNewPass) $errors[] = $checkNewPass;
-
-      } else if(
-          ($this->__get('password') && !$this->__get('new_password')) || 
-          (!$this->__get('password') && $this->__get('new_password'))
+        if ($checkNewPass) $errors[] = $checkNewPass;
+      } else if (
+        ($this->__get('password') && !$this->__get('new_password')) ||
+        (!$this->__get('password') && $this->__get('new_password'))
       ) {
         $errors[] = 'Os campos senha e nova senha são requeridos';
       }
     }
 
-    if($type === 'register') {
-      if(!$this->__get('photo')) {
+
+    if ($type === 'register') {
+      if (!$this->__get('photo')) {
         $errors[] = 'O campo foto é requerido';
       }
     }
 
-    if($type === 'register' || $type === 'update') {
-      if(($type === 'update' && $this->__get('number')) || $type === 'register') {
+    if ($type === 'register' || $type === 'update') {
+      if (($type === 'update' && $this->__get('number')) || $type === 'register') {
         $checkNumber = $this->find('número', 'number', ['+', '(', ')', '-']);
-        if($checkNumber) $errors[] = $checkNumber;
-  
+        if ($checkNumber) $errors[] = $checkNumber;
+
         $checkNumber2 = $this->len('número', 'number', 19, 0);
-        if($checkNumber2) $errors[] = $checkNumber2;
+        if ($checkNumber2) $errors[] = $checkNumber2;
       }
     }
 
-    if(sizeof($errors)) {
+    if (sizeof($errors)) {
       return $errors;
     }
-        
+
     return null;
   }
 
-  function deleteNumbers() {
-    if($this->__get('deleted_number')) {
-      foreach($this->__get('deleted_number') as $number) {
+  function deleteNumbers()
+  {
+    if ($this->__get('deleted_number')) {
+      foreach ($this->__get('deleted_number') as $number) {
         $deleteNumbersQuery = 'DELETE FROM user_numbers WHERE user_id = ? AND id = ?';
         $deleteNumbers = Connection::connect()->prepare($deleteNumbersQuery);
         $deleteNumbers->bindValue(1, $_SESSION['id']);
@@ -101,35 +111,49 @@ class UserModel extends Model {
     }
   }
 
-  function createNumbers($myIdData) {
-    foreach($this->__get('number') as $number) {
-      $insertNumberQuery = 'INSERT INTO user_numbers (phone_number, user_id) VALUES (?, ?)';
-
-      $insertNumber = Connection::connect()->prepare($insertNumberQuery);
-
-      $insertNumber->bindValue(1, $number);
-      $insertNumber->bindValue(2, $myIdData);
-      $insertNumber->execute();
+  function createNumbers($myIdData)
+  {
+    foreach ($this->__get('number') as $id => $number) {
+      if(!strpos($id, 'edited')) {
+        $insertNumberQuery = 'INSERT INTO user_numbers (phone_number, user_id) VALUES (?, ?)';
+  
+        $insertNumber = Connection::connect()->prepare($insertNumberQuery);
+  
+        $insertNumber->bindValue(1, $number);
+        $insertNumber->bindValue(2, $myIdData);
+        $insertNumber->execute();
+      } else {
+        $updateNumberQuery = 'UPDATE user_numbers SET phone_number = ? WHERE id = ? AND user_id = ?';
+  
+        $insertNumber = Connection::connect()->prepare($updateNumberQuery);
+  
+        $insertNumber->bindValue(1, $number);
+        $insertNumber->bindValue(2, str_replace('edited', '', $id));
+        $insertNumber->bindValue(3, $myIdData);
+        $insertNumber->execute();
+      }
     }
   }
 
-  function deleteMyEquipments() {
+  function deleteMyEquipments()
+  {
     $equipmentModel = new EquipmentModel();
 
-    foreach($equipmentModel->index(false)[1] as $myEquipment) {
+    foreach ($equipmentModel->index(false)[1] as $myEquipment) {
       $_POST['id'] = $myEquipment->id;
       $equipmentModel->delete();
     }
   }
 
-  function register() {
+  function register()
+  {
     try {
-      if($this->checkErrors('register')) {
+      if ($this->checkErrors('register')) {
         return ['errors', $this->checkErrors('register')];
       }
 
       $ext = explode('.', $this->__get('photo')['name'])[1];
-      $filename = date('dmYHis_'.rand(10000, 89999)).'.'.$ext;
+      $filename = date('dmYHis_' . rand(10000, 89999)) . '.' . $ext;
 
       $getUserQuery = 'SELECT email FROM users WHERE cpf = ? OR email = ? LIMIT 1';
 
@@ -141,7 +165,7 @@ class UserModel extends Model {
 
       $userData = $getUser->fetch(PDO::FETCH_OBJ);
 
-      if(!isset($userData->email)) {
+      if (!isset($userData->email)) {
         $registerUserQuery = 'INSERT INTO users (photo, name, email, password, cpf, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)';
         $registerUser = Connection::connect()->prepare($registerUserQuery);
         $registerUser->bindValue(1, $filename);
@@ -152,9 +176,9 @@ class UserModel extends Model {
         $registerUser->bindValue(6, $this->__get('address'));
         $registerUser->bindValue(7, 0);
         $registerUser->execute();
-    
-        move_uploaded_file($this->__get('photo')['tmp_name'], __DIR__.'/../uploads/'. $filename);
-        
+
+        move_uploaded_file($this->__get('photo')['tmp_name'], __DIR__ . '/../uploads/' . $filename);
+
         $myIdQuery = 'SELECT id FROM users WHERE email = ?';
         $myId = Connection::connect()->prepare($myIdQuery);
         $myId->bindValue(1, $this->__get('email'));
@@ -163,22 +187,50 @@ class UserModel extends Model {
 
         $myIdData = $myId->fetch(PDO::FETCH_OBJ);
 
-        if(isset($myIdData->id)) {
+        if (isset($myIdData->id)) {
           $this->createNumbers($myIdData->id);
         }
 
-        return ['success', true];
-      } 
+        return ['success', 'Usuário registrado com sucesso!'];
+      }
 
       return ['errors', ['Este usuário já foi criado']];
-    } catch(Throwable $e) {
+    } catch (Throwable $e) {
       return ['errors', [$e->getMessage()]];
     }
   }
 
-  function update() {
+  function checkRegister()
+  {
     try {
-      if($this->checkErrors('update')) {
+      if ($this->checkErrors('check_register')) {
+        return ['errors', $this->checkErrors('check_register')];
+      }
+
+      $getUserQuery = 'SELECT email FROM users WHERE email = ? LIMIT 1';
+
+      $getUser = Connection::connect()->prepare($getUserQuery);
+
+      $getUser->bindValue(1, $this->__get('email'));
+      $getUser->execute();
+
+      $userData = $getUser->fetch(PDO::FETCH_OBJ);
+
+      if(isset($userData->email)) {
+        return ['errors', ['Este usuário já foi criado']];
+      }
+
+      return ['success', 'Prossiga seu cadastro'];
+
+    } catch (Throwable $e) {
+      return ['errors', [$e->getMessage()]];
+    }
+  }
+
+  function update()
+  {
+    try {
+      if ($this->checkErrors('update')) {
         return ['errors', $this->checkErrors('update')];
       }
 
@@ -187,33 +239,37 @@ class UserModel extends Model {
       $getUser->bindValue(1, $this->__get('cpf'));
       $getUser->bindValue(2, $this->__get('email'));
       $getUser->bindValue(3, $_SESSION['id']);
-      
+
       $getUser->execute();
 
       $userData = $getUser->fetch(PDO::FETCH_OBJ);
 
-      if(!$userData) {
+      if (!$userData) {
         $this->deleteNumbers();
 
         $updateUserQuery = 'UPDATE users SET name = ?, email = ?, cpf = ?, address = ? WHERE id = ?';
 
-        if($this->__get('photo')) {
+        if ($this->__get('photo')) {
           $updateUserQuery = 'UPDATE users SET name = ?, email = ?, cpf = ?, address = ?, photo = ? WHERE id = ?';
 
           $myUserQuery = 'SELECT photo FROM users WHERE id = ?';
           $myUser = Connection::connect()->prepare($myUserQuery);
           $myUser->bindValue(1, $_SESSION['id']);
           $myUser->execute();
-          
+
           $myPhoto = $myUser->fetch(PDO::FETCH_OBJ);
 
-          if($myPhoto) {
-            unlink(__DIR__.'/../uploads/'.$myPhoto->photo);
+          if ($myPhoto) {
+            unlink(__DIR__ . '/../uploads/' . $myPhoto->photo);
           }
 
           $ext = explode('.', $this->__get('photo')['name'])[1];
-          $filename = date('dmYHis_'.rand(10000, 89999)).'.'.$ext;
-          move_uploaded_file($this->__get('photo')['tmp_name'], __DIR__.'/../uploads/'. $filename);
+          $filename = date('dmYHis_' . rand(10000, 89999)) . '.' . $ext;
+          move_uploaded_file($this->__get('photo')['tmp_name'], __DIR__ . '/../uploads/' . $filename);
+          
+          $time = time() + (3600 * 24 * 7);
+          setcookie('photo', cryptography($filename), $time, '/');
+          $_SESSION['photo'] = $filename;
         }
 
         $updateUser = Connection::connect()->prepare($updateUserQuery);
@@ -222,7 +278,7 @@ class UserModel extends Model {
         $updateUser->bindValue(3, $this->__get('cpf'));
         $updateUser->bindValue(4, $this->__get('address'));
 
-        if($this->__get('photo')) {
+        if ($this->__get('photo')) {
           $updateUser->bindValue(5, $filename);
           $updateUser->bindValue(6, $_SESSION['id']);
         } else {
@@ -231,49 +287,54 @@ class UserModel extends Model {
 
         $updateUser->execute();
 
-        if($this->__get('number')) $this->createNumbers($_SESSION['id']);
+        $time = time() + (3600 * 24 * 7);
+        setcookie('name', cryptography($this->__get('name')), $time, '/');
+        $_SESSION['name'] = $this->__get('name');
 
-        if($this->__get('password')) {
+        if ($this->__get('number')) $this->createNumbers($_SESSION['id']);
+
+        if ($this->__get('password')) {
           $findByPassQuery = 'SELECT id, password FROM users WHERE id = ? LIMIT 1';
           $findByPass = Connection::connect()->prepare($findByPassQuery);
           $findByPass->bindValue(1, $_SESSION['id']);
           $findByPass->execute();
-  
+
           $foundPass = $findByPass->fetch(PDO::FETCH_OBJ);
 
-          if(isset($foundPass->id) && password_verify($this->__get('password'), $foundPass->password)) {
+          if (isset($foundPass->id) && password_verify($this->__get('password'), $foundPass->password)) {
             $updatePassQuery = 'UPDATE users SET password = ? WHERE id = ?';
             $updatePass = Connection::connect()->prepare($updatePassQuery);
             $updatePass->bindValue(1, password_hash($this->__get('new_password'), PASSWORD_DEFAULT));
             $updatePass->bindValue(2, $_SESSION['id']);
             $updatePass->execute();
-            
-            return ['success', true];
-          } 
+
+            return ['success', 'Usuário atualizado com sucesso!'];
+          }
 
           return ['errors', ['Senha atual inválida']];
         }
 
-        return ['success', true];
-      } 
+        return ['success', 'Usuário atualizado com sucesso!'];
+      }
 
-      if($userData->email === $this->__get('email')) {
+      if ($userData->email === $this->__get('email')) {
         return ['errors', ['Este email já está em uso por outra pessoa']];
-      } 
-        
+      }
+
       return ['errors', ['Este CPF já é de outra pessoa']];
-    } catch(Throwable $e) {
+    } catch (Throwable $e) {
       return ['errors', [$e->getMessage()]];
     }
   }
 
-  function login() {
+  function login()
+  {
     try {
-      if($this->checkErrors('login')) {
+      if ($this->checkErrors('login')) {
         return ['errors', $this->checkErrors('login')];
       }
 
-      $getUserQuery = 'SELECT id, is_admin, password FROM users WHERE email = ? LIMIT 1';
+      $getUserQuery = 'SELECT id, is_admin, name, photo, password FROM users WHERE email = ? LIMIT 1';
 
       $getUser = Connection::connect()->prepare($getUserQuery);
       $getUser->bindValue(1, $this->__get('email'));
@@ -281,101 +342,120 @@ class UserModel extends Model {
 
       $userData = $getUser->fetch(PDO::FETCH_OBJ);
 
-      if(!$userData || !password_verify($this->__get('password'), $userData->password)) {
+      if (!$userData || !password_verify($this->__get('password'), $userData->password)) {
         return ['errors', ['Email e/ou senha inválidos']];
-      } 
-      
+      }
+
       $_SESSION['id'] = $userData->id;
+      $_SESSION['name'] = $userData->name;
+      $_SESSION['photo'] = $userData->photo;
       $_SESSION['is_admin'] = $userData->is_admin;
 
-      if($this->__get('remember')) {
-        setcookie('id', cryptography($userData->id), time() + (3600 * 24 * 7), '/');
-        setcookie('is_admin', cryptography($userData->is_admin), time() + (3600 * 24 * 7), '/');
+      if ($this->__get('remember')) {
+        $time = time() + (3600 * 24 * 7);
+        setcookie('id', cryptography($userData->id), $time, '/');
+        setcookie('name', cryptography($userData->name), $time, '/');
+        setcookie('photo', cryptography($userData->photo), $time, '/');
+        setcookie('is_admin', cryptography($userData->is_admin), $time, '/');
       }
-        
-      return ['success', true];
-    } catch(Throwable $e) {
+
+      return ['success', 'Login realizado com sucesso!'];
+    } catch (Throwable $e) {
       return ['errors', [$e->getMessage()]];
     }
   }
-  
-  function index() {
+
+  function index($onlyAdmin = false)
+  {
     try {
 
-      $usersQuery = 'SELECT users.photo, users.name, users.email, users.cpf, users.address, GROUP_CONCAT(DISTINCT CONCAT(user_numbers.id,",",user_numbers.phone_number) ORDER BY user_numbers.id SEPARATOR ";") AS numbers FROM users INNER JOIN user_numbers ON users.id = user_numbers.user_id GROUP BY users.id';
-      
+      $usersQuery = 'SELECT users.id, users.photo, users.name, users.email, users.cpf, users.address, GROUP_CONCAT(DISTINCT CONCAT(user_numbers.id,",",user_numbers.phone_number) ORDER BY user_numbers.id SEPARATOR ";") AS numbers FROM users INNER JOIN user_numbers ON users.id = user_numbers.user_id WHERE is_admin = ? GROUP BY users.id';
+
       $users = Connection::connect()->prepare($usersQuery);
+
+      if($onlyAdmin) {
+        $users->bindValue(1, 1);
+      } else {
+        $users->bindValue(1, 0);
+      }
+
       $users->execute();
-  
+
       $usersData = $users->fetchAll(PDO::FETCH_OBJ);
 
-      if($usersData) {
-        foreach($usersData as $userData) {
-          if(isset($userData->numbers)) {
+      if ($usersData) {
+        foreach ($usersData as $userData) {
+          if (isset($userData->numbers)) {
             $userData->numbers = explode(';', $userData->numbers);
-  
-            foreach($userData->numbers as $idNumber => $user_number) {
+
+            foreach ($userData->numbers as $idNumber => $user_number) {
               $id = explode(',', $user_number)[0];
               $number = explode(',', $user_number)[1];
-              
-              $userData->numbers[$idNumber] = ['id' => $id, 'number' => $number];
-            } 
+
+              $userData->numbers[$idNumber] = $number;
+            }
           }
         }
-      }    
-  
+      }
+
       return ['success', $usersData];
-    } catch(Throwable $e) {
+    } catch (Throwable $e) {
       return ['errors', [$e->getMessage()]];
     }
   }
 
-  function show() {
+  function profile($me = false)
+  {
     try {
 
       $myUserQuery = 'SELECT users.photo, users.name, users.email, users.cpf, users.address, GROUP_CONCAT(DISTINCT CONCAT(user_numbers.id,",",user_numbers.phone_number) ORDER BY user_numbers.id SEPARATOR ";") AS numbers FROM users INNER JOIN user_numbers ON users.id = user_numbers.user_id WHERE users.id = ? GROUP BY users.id';
 
       $myUser = Connection::connect()->prepare($myUserQuery);
-      $myUser->bindValue(1, $_SESSION['id']);
+      if($me) {
+        $myUser->bindValue(1, $_SESSION['id']);
+      } else {
+        $myUser->bindValue(1, $_POST['id']);
+      }
       $myUser->execute();
-  
+
       $myUserData = $myUser->fetch(PDO::FETCH_OBJ);
 
-      if($myUserData) {
+      if ($myUserData) {
 
-        if(isset($myUserData->numbers)) {
+        if (isset($myUserData->numbers)) {
           $myUserData->numbers = explode(';', $myUserData->numbers);
 
-          foreach($myUserData->numbers as $idNumber => $user_number) {
+          foreach ($myUserData->numbers as $idNumber => $user_number) {
             $id = explode(',', $user_number)[0];
             $number = explode(',', $user_number)[1];
-            
+
             $myUserData->numbers[$idNumber] = ['id' => $id, 'number' => $number];
-          } 
+          }
         }
 
         return ['success', $myUserData];
       }
-  
+
       return ['errors', ['Este usuário não existe']];
-    } catch(Throwable $e) {
+    } catch (Throwable $e) {
       return ['errors', [$e->getMessage()]];
     }
   }
 
-  function delete() {
+  function delete()
+  {
     try {
 
       $getUserQuery = 'SELECT photo, id FROM users WHERE id = ?';
       $getUser = Connection::connect()->prepare($getUserQuery);
       $getUser->bindValue(1, $_SESSION['id']);
       $getUser->execute();
-      
+
       $userData = $getUser->fetch(PDO::FETCH_OBJ);
 
-      if($userData) {
-        if(isset($userData->photo)) {
-          unlink(__DIR__.'/../uploads/'.$userData->photo);
+      if ($userData) {
+        if (isset($userData->photo)) {
+          unlink(__DIR__ . '/../uploads/' . $userData->photo);
         }
 
         $this->deleteMyEquipments();
@@ -383,13 +463,13 @@ class UserModel extends Model {
         $deleteUserQuery = 'DELETE FROM users WHERE id = ?';
         $deleteUser = Connection::connect()->prepare($deleteUserQuery);
         $deleteUser->bindValue(1, $_SESSION['id']);
-        $deleteUser->execute();   
-        
-        return ['success', true];
+        $deleteUser->execute();
+
+        return ['success', 'Usuário deletado com sucesso!'];
       }
 
       return ['errors', ['Este usuário não existe']];
-    } catch(Throwable $e) {
+    } catch (Throwable $e) {
       return ['errors', [$e->getMessage()]];
     }
   }

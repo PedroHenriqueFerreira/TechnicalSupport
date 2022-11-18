@@ -1,0 +1,72 @@
+<div class="account-container equipment update">
+  <form action="" page="/" method="POST">
+    <h1>Ordem de serviço</h1>
+    <div
+     class="radio-block">
+      <span class="label">Equipamento</span>
+      <div>
+        <label class="radio-item show" title="<?= $result[1]->specifications ?>">
+          <span></span>
+          <span><?= format($result[1]->name, 13) ?></span>
+          <img src="/backend/uploads/<?= $result[1]->photos[0]['photo'] ?>" alt="" slide=<?= json_encode($result[1]->photos) ?>>
+        </label>
+      </div>
+    </div>
+    <label class="input-block">
+      <span class="label">Descrição</span>
+      <textarea class="custom" name="description" readonly><?= $result[1]->description ?></textarea>
+      <span></span>
+    </label>
+    <label class="input-block">
+      <span class="label">Relatório</span>
+      <textarea class="custom" name="report" readonly><?php
+        switch($result[1]->status) {
+          case 0:
+            echo 'Em espera...';
+            break;
+          case 1:
+            echo $result[1]->report;
+            break;
+          case 2:
+            echo 'Recusada';
+            break;
+        }
+      ?></textarea>
+      <span></span>
+    </label>
+    <label class="input-block">
+      <span class="label">Custo</span>
+      <input class="custom" name="cost" type="text" readonly value="<?php 
+        switch($result[1]->status) {
+          case 0:
+            echo 'Em espera...';
+            break;
+          case 1:
+            echo $result[1]->cost;
+            break;
+          case 2:
+            echo 'Recusada';
+            break;
+        }
+      ?>">
+      <span></span>
+    </label>
+    <label class="input-block">
+      <span class="label">Data de resposta</span>
+      <input class="custom" name="updated_at" type="text" readonly value="<?php
+        switch($result[1]->status) {
+          case 0:
+            echo 'Em espera...';
+            break;
+          default:
+            echo $result[1]->updated_at;
+            break;
+        } 
+      ?>">
+      <span></span>
+    </label>
+  </form> 
+  <div class="img-container">
+    <?php importImg('requestImg.svg') ?>
+  </div>
+</div>

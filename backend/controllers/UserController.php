@@ -9,21 +9,29 @@ class UserController extends Controller
     $this->userModel = new UserModel();
   }
 
-  function register()
+  function registerAction()
   {
     $this->setAttr($this->userModel, 'name', 'POST');
     $this->setAttr($this->userModel, 'email', 'POST');
     $this->setAttr($this->userModel, 'password', 'POST');
+    $this->userModel->__set('is_admin', false);
     $this->setAttr($this->userModel, 'photo', 'FILES');
     $this->setAttr($this->userModel, 'address', 'POST');
     $this->setAttr($this->userModel, 'cpf', 'POST');
     $this->setAttr($this->userModel, 'number', 'POST');
-    $this->userModel->__set('is_admin', false);
-
+    
     $this->jsonData($this->userModel->register());
   }
+  
+  function checkRegisterAction() {
+    $this->setAttr($this->userModel, 'name', 'POST');
+    $this->setAttr($this->userModel, 'email', 'POST');
+    $this->setAttr($this->userModel, 'password', 'POST');
 
-  function login() {
+    $this->jsonData($this->userModel->checkRegister());
+  }
+
+  function loginAction() {
     $this->setAttr($this->userModel, 'email', 'POST');
     $this->setAttr($this->userModel, 'password', 'POST');
     $this->setAttr($this->userModel, 'remember', 'POST');
@@ -31,7 +39,7 @@ class UserController extends Controller
     $this->jsonData($this->userModel->login());
   }
 
-  function update() {
+  function updateAction() {
     $this->setAttr($this->userModel, 'name', 'POST');
     $this->setAttr($this->userModel, 'email', 'POST');
     $this->setAttr($this->userModel, 'password', 'POST');
@@ -45,27 +53,47 @@ class UserController extends Controller
     $this->jsonData($this->userModel->update());
   }
 
-  function index() {
-    $this->jsonData($this->userModel->index());
+  function technicals() {
+    $this->render(['user', 'users'], $this->userModel->index(true));
+  }
+  
+  function clients() {
+    $this->render(['user', 'users'], $this->userModel->index());
   }
 
-  function show() {
-    $this->jsonData($this->userModel->show());
-  }
-
-  function logout() {
+  function logoutAction() {
     session_destroy();
     setcookie('id', '', time() - 3600, '/');
+    setcookie('name', '', time() - 3600, '/');
+    setcookie('photo', '', time() - 3600, '/');
     setcookie('is_admin', '', time() - 3600, '/');
 
-    $this->jsonData(['success', true]);
+    $this->jsonData(['success', 'Usuário deslogado com sucesso!']);
   }
 
-  function delete() {
+  function deleteAction() {
     $this->jsonData($this->userModel->delete());
 
     session_destroy();
     setcookie('id', '', time() - 3600, '/');
+    setcookie('name', '', time() - 3600, '/');
+    setcookie('photo', '', time() - 3600, '/');
     setcookie('is_admin', '', time() - 3600, '/');
+  }
+
+  function login() {
+    $this->render(['user', 'login']);
+  }
+
+  function register() {
+    $this->render(['user', 'register']);
+  }
+
+  function profile() {
+    $this->render(['user', 'profile'], $this->userModel->profile(true));
+  }
+
+  function show() {
+    $this->render(['user', 'show'], $this->userModel->profile());
   }
 }

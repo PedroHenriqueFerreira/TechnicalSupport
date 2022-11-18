@@ -1,0 +1,119 @@
+<?php
+  $total = count($result[1]);
+  $accepted = 0;
+  $refused = 0;
+  $waiting = 0;
+
+  foreach($result[1] as $request) {
+    switch($request->status) {
+      case 0:
+        $waiting++;
+        break;
+      case 1:
+        $accepted++;
+        break;
+      case 2:
+        $refused++;
+        break;
+    }
+  }
+
+?>
+<div class="container">
+  <h1>Ordens de serviço</h1>
+  <div class="cards">
+    <div class="card wait">
+      <h4>Em espera</h4>
+      <h1><?= $waiting ?></h1>
+      <div class="row">
+        <p>Porcentagem</p>
+        <p><?= $waiting > 0 ? (100* $waiting) / $total : 0 ?>%</p>
+      </div>
+    </div>
+    <div class="card accept">
+      <h4>Aceitas</h4>
+      <h1><?= $accepted ?></h1>
+      <div class="row">
+        <p>Porcentagem</p>
+        <p><?= $accepted > 0 ? (100* $accepted) / $total : 0 ?>%</p>
+      </div>
+    </div>
+    <div class="card recused">
+      <h4>Recusadas</h4>
+      <h1><?= $refused ?></h1>
+      <div class="row">
+        <p>Porcentagem</p>
+        <p><?= $refused > 0 ? (100* $refused) / $total : 0 ?>%</p>
+      </div>
+    </div>
+    <div class="card total">
+      <h4>Total</h4>
+      <h1><?= $total ?></h1>
+      <div class="row">
+        <p>Porcentagem</p>
+        <p>100%</p>
+      </div>
+    </div>
+  </div>
+  <div class="table-container">
+    <div class="table">
+      <div class="th">
+      <div class="td">#</div>
+        <div class="td">Usuário</div>
+        <div class="td">Equipamento</div>
+        <div class="td">Descrição</div>
+        <div class="td">Data</div>
+        <div class="td">Status</div>
+        <div class="td" style="justify-content: center;">Opções</div>
+      </div>
+      <div class="tbody">
+        <?php foreach($result[1] as $idx => $request) { ?>
+          <div class="tr" href="/request/<?= $request->id ?>">
+            <div class="td idx"><?= $idx + 1 ?></div>
+            <div class="td">
+              <img src="/backend/uploads/<?= $request->user_photo ?>" alt="">
+              <?= format($request->user_name, 8) ?>
+            </div>
+            <div class="td">
+              <?= format($request->name, 13) ?>
+            </div>
+            <div class="td" title="<?= $request->description ?>">
+              <?= format($request->description, 50) ?>
+            </div>
+            <div class="td" title="<?= explode(' ', $request->updated_at)[1] ?>">
+              <?= explode(' ', str_replace('-', '/', $request->updated_at))[0] ?>
+            </div>
+            <div class="td status">
+              <?php 
+                switch($request->status) {
+                  case 0:
+                    importImg('wait.svg');
+                    break; 
+                  case 1:
+                    importImg('accepted.svg');
+                    break;
+                  case 2:
+                    importImg('refused.svg');
+                    break;
+                }
+              ?>
+            </div>
+            <div class="td options">
+              <?php if(!$_SESSION['is_admin'] || $request->user_id === $_SESSION['id']) { ?>
+                <a class="custom delete" action="/request/action/<?= $request->id ?>/delete" href="/">Cancelar</a>
+              <?php } else { ?>
+                <?php if($request->status == 0) { ?>
+                  <a class="custom accept" href="/request/<?= $request->id ?>/accept">Aceitar</a>
+                  <a class="custom delete" action="/request/action/<?= $request->id ?>/refuse" href="/">Recusar</a>
+                <?php } else { ?>
+                  <a class="custom delete" action="/request/action/<?= $request->id ?>/delete" href="/">Remover</a>
+                <?php } ?>
+              <?php } ?>
+            </div>
+          </div>
+        <?php } ?>
+      </div>
+    </div>
+  </div>
+  <a href="/request/create" class="custom create">+ Nova ordem de serviço</a>
+</div>

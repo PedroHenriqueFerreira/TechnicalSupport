@@ -20,7 +20,7 @@ class EquipmentModel extends Model {
   function checkErrors($type) {
     $errors = [];
   
-    $checkName = $this->len('nome', 'name', 5, 30);
+    $checkName = $this->len('nome', 'name', 3, 30);
     if($checkName) $errors[] = $checkName; 
 
     $checkEspecifications = $this->len('especificações', 'specifications', 50, 500);
@@ -109,12 +109,12 @@ class EquipmentModel extends Model {
     return $equipmentData;
   }
 
-  function index($compost = true) {
+  function index($compost = true, $onlyMine = false) {
     if($compost) {
-      $selectEquipmentsQuery = 'SELECT equipments.*, GROUP_CONCAT(DISTINCT CONCAT(equipment_photos.id,",",equipment_photos.photo) ORDER BY equipment_photos.id SEPARATOR ";") AS photos FROM equipments INNER JOIN equipment_photos ON equipments.id = equipment_photos.equipment_id';
+      $selectEquipmentsQuery = 'SELECT users.id as user_id, users.name as user_name, users.photo as user_photo, equipments.*, GROUP_CONCAT(DISTINCT CONCAT(equipment_photos.id,",",equipment_photos.photo) ORDER BY equipment_photos.id SEPARATOR ";") AS photos FROM equipments INNER JOIN equipment_photos ON equipments.id = equipment_photos.equipment_id INNER JOIN users ON users.id = equipments.user_id';
       
-      if(!$_SESSION['is_admin']) {
-        $selectEquipmentsQuery .= ' WHERE equipments.user_id = ?';
+      if(!$_SESSION['is_admin'] || $onlyMine) {
+        $selectEquipmentsQuery .= ' WHERE users.id = ?';
       }
 
       $selectEquipmentsQuery .= ' GROUP BY equipments.id';
@@ -123,7 +123,7 @@ class EquipmentModel extends Model {
       $selectEquipmentsQuery = 'SELECT id FROM equipments WHERE user_id = ?';
     }
     $selectEquipments = Connection::connect()->prepare($selectEquipmentsQuery);
-    if(!$_SESSION['is_admin'] || !$compost) {
+    if(!$_SESSION['is_admin'] || !$compost || $onlyMine) {
       $selectEquipments->bindValue(1, $_SESSION['id']);
     }
     $selectEquipments->execute();
@@ -186,7 +186,7 @@ class EquipmentModel extends Model {
     
       $this->addPhoto($myEquipment->id);
 
-      return ['success', true];
+      return ['success', 'Equipamento criado com sucesso!'];
       
 
     } catch(Throwable $e) {
@@ -247,7 +247,7 @@ class EquipmentModel extends Model {
           $this->addPhoto($_POST['id']);
         } 
         
-        return ['success', true]; 
+        return ['success', 'Equipamento atualizado com sucesso!']; 
       }
 
       return ['errors', ['Equipamento não encontrado']];
@@ -275,7 +275,7 @@ class EquipmentModel extends Model {
         $deleteEquipment->bindValue(1, $_POST['id']);
         $deleteEquipment->execute();
         
-        return ['success', true]; 
+        return ['success', 'Equipamento deletado com sucesso']; 
       }
 
       return ['errors', ['Equipamento não encontrado']];

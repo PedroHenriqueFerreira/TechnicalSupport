@@ -1,8 +1,11 @@
 <?php
+
 require(__DIR__ . '/config/connection.php');
 require(__DIR__.'/utils/Model.php');
 require(__DIR__.'/utils/Controller.php');
 require(__DIR__.'/utils/cryptography.php');
+require(__DIR__.'/utils/importImg.php');
+require(__DIR__.'/utils/format.php');
 
 class Routes
 {
@@ -16,6 +19,8 @@ class Routes
       $_SERVER['REQUEST_URI'],
       PHP_URL_PATH
     );
+
+    define('URL', $this->url);
 
     require(__DIR__ . '/routes.php');
     $this->routes = $myRoutes;
@@ -55,17 +60,22 @@ class Routes
     if (!$found) {
       $this->control(
         $this->routes['*'][0],
-        $this->routes['*'][1]
+        $this->routes['*'][1],
       );
     } else {
       if(!isset($_SESSION['id']) && isset($_COOKIE['id'])) {
-        echo 'DESCRIPTOGRAFANDO...';
         $_SESSION['id'] = cryptography($_COOKIE['id'], 'decrypt');
+        $_SESSION['name'] = cryptography($_COOKIE['name'], 'decrypt');
+        $_SESSION['photo'] = cryptography($_COOKIE['photo'], 'decrypt');
         $_SESSION['is_admin'] = cryptography($_COOKIE['is_admin'], 'decrypt');
       }
 
       if(isset($this->routes[$this->url][2]) && $this->routes[$this->url][2] && !isset($_SESSION['id'])) {
-        echo json_encode(['errors' => ['Login requerido']]);
+        if(isset($_GET['reduced'])) {
+          echo json_encode(['errors' => ['Login requerido']]);
+        } else {
+          $this->control('home', 'redirect', ['redirect', '/login', 'Login requerido']);
+        }
         return null;
       } else {
         if(
@@ -73,7 +83,11 @@ class Routes
           isset($this->routes[$this->url][3]) && $this->routes[$this->url][3] && 
           isset($_SESSION['id'])
         ) {
-          echo json_encode(['errors' => ['Saia de conta para acessar essa função']]);          
+          if(isset($_GET['reduced'])) {
+            echo json_encode(['errors' => ['Saia da conta atual para acessar esta página']]);          
+          } else {
+            $this->control('home', 'redirect', ['redirect', '/', 'Saia da conta atual para acessar esta página']);
+          }
           return null;
         }
 
@@ -82,24 +96,33 @@ class Routes
           isset($this->routes[$this->url][3]) && $this->routes[$this->url][3] && 
           isset($_SESSION['is_admin']) && !$_SESSION['is_admin']
         ) {
-          echo json_encode(['errors' => ['Autorização necessária']]);          
+          if(isset($_GET['reduced'])) {
+            echo json_encode(['errors' => ['Autorização necessária']]);          
+          } else {
+            $this->control('home', 'redirect', ['redirect', '/', 'Autorização necessária']);
+          }
           return null;
         }
-
+        
         $this->control(
           $this->routes[$this->url][0],
-          $this->routes[$this->url][1]
+          $this->routes[$this->url][1],
         );  
       }
     }
   }
 
-  function control($page, $action)
+  function control($page, $action, $response = '')
   {
     require(__DIR__ . '/controllers' . '/' . ucfirst($page) . 'Controller.php');
 
     $controller = ucfirst($page) . 'Controller';
-    (new $controller)->$action();
+    
+    if($response) {
+      (new $controller)->$action($response);
+    } else {
+      (new $controller)->$action();
+    }
   }
 }
 

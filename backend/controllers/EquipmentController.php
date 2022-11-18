@@ -9,7 +9,7 @@ class EquipmentController extends Controller
     $this->equipmentModel = new EquipmentModel();
   }
 
-  function create() {
+  function createAction() {
     $this->setAttr($this->equipmentModel, 'name', 'POST');
     $this->setAttr($this->equipmentModel, 'specifications', 'POST');
     $this->setAttr($this->equipmentModel, 'photo', 'FILES');
@@ -17,11 +17,15 @@ class EquipmentController extends Controller
     $this->jsonData($this->equipmentModel->create());
   }
 
-  function index() {
-    $this->jsonData($this->equipmentModel->index());
+  function create() {
+    $this->render(['equipment', 'create']);
   }
 
-  function update() {
+  function index() {
+    $this->render(['equipment', 'index'], $this->equipmentModel->index(true));
+  }
+
+  function updateAction() {
     $this->setAttr($this->equipmentModel, 'name', 'POST');
     $this->setAttr($this->equipmentModel, 'specifications', 'POST');
     $this->setAttr($this->equipmentModel, 'photo', 'FILES');
@@ -31,7 +35,7 @@ class EquipmentController extends Controller
   }
 
   function show() {
-    $this->jsonData($this->equipmentModel->show());
+    $this->render(['equipment', 'show'], $this->equipmentModel->show());
   }
 
   function delete() {

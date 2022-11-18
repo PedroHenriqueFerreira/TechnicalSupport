@@ -1,10 +1,16 @@
-  
-
+    <footer <?php echo isset($_SESSION['id']) ? 'class="logged"' : '' ?>>
+      <p>&copy; Copyright 2021 all rights reserved by ServiTech PC</p>
+    </footer>
+  </div>
+<?php if (!isset($_GET['reduced'])) { ?>
+  <div class="toast-container">
+    <span></span>
+  </div>
+  <div class="loader-container"></div>
   <script src="/frontend/js/global.js" type="module"></script>
-  <script src="/frontend/js/events/submits.js" type="module"></script>
-  <script src="/frontend/js/events/keyups.js" type="module"></script>
-  <script src="/frontend/js/events/clicks.js" type="module"></script>
-  <script src="/frontend/js/events/change.js" type="module"></script>
-  <script src="/frontend/js/routes.js" type="module"></script>
-</body>
-</html>
+  <script src="/frontend/js/utils/mask.js"></script>
+  </body>
+
+  </html>
+
+<?php } ?>
