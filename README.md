@@ -21,7 +21,7 @@ $ php -S localhost:3000
 
 ## Linguagens utilizadas
 
-- `mySQL`
+- `MySQL`
 - `PHP`
 - `JS`
 - `HTML/CSS`
