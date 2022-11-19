@@ -6,14 +6,14 @@ Este projeto é um serviço de assistência técnica bem completa, foi construí
 Possui carregamento dinâmico das páginas que imitam o reactJS.
 O backend foi construído no modelo MVC.
 
-## Iniciando
+## Primeiros passos
 
 Primeiramente é necessário ter o `PHP` e o `MySQL` em sua máquina.
 
 - Crie sua conexão com o banco no arquivo: `/backend/config/connection.php`.
 - Logo após, insira dentro do banco o arquivo: `/backend/config/commands.sql`.
 
-Rodando o projeto:
+## Execução
 
 ```
 $ php -S localhost:3000
