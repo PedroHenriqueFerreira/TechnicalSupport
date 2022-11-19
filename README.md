@@ -3,7 +3,7 @@
 
 ## Descrição do repositório
 Este projeto é um dashdoard para assistência técnica, foi construído inteiramente sem frameworks. 
-Possui carregamento dinâmico das páginas que imitam o reactJS.
+Possui carregamento dinâmico das páginas similar ao reactJS.
 O backend foi construído no modelo MVC.
 
 ## Primeiros passos
